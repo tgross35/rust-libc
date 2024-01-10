@@ -885,6 +885,11 @@ pub const MAXTC: c_long = 6;
 pub const _CS_V6_ENV: c_int = 1148;
 pub const _CS_V7_ENV: c_int = 1149;
 
+// linux/sched.h
+pub const CLONE_NEWTIME: c_int = 0x80;
+pub const CLONE_CLEAR_SIGHAND: c_ulonglong = 0x100000000;
+pub const CLONE_INTO_CGROUP: c_ulonglong = 0x200000000;
+
 cfg_if! {
     if #[cfg(target_arch = "s390x")] {
         pub const POSIX_FADV_DONTNEED: c_int = 6;
