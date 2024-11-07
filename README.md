@@ -1,6 +1,6 @@
 # libc - Raw FFI bindings to platforms' system libraries
 
-[![GHA Status]][GitHub Actions] [![Cirrus CI Status]][Cirrus CI] [![Latest Version]][crates.io] [![Documentation]][docs.rs] ![License]
+<!-- [![GHA Status]][GitHub Actions] [![Cirrus CI Status]][Cirrus CI] [![Latest Version]][crates.io] [![Documentation]][docs.rs] ![License] -->
 
 `libc` provides all of the definitions necessary to easily interoperate with C
 code (or "C-like" code) on each of the platforms that Rust supports. This
@@ -44,32 +44,26 @@ libc = "0.2"
 * `std`: by default `libc` links to the standard library. Disable this feature
   to remove this dependency and be able to use `libc` in `#![no_std]` crates.
 
-* `extra_traits`: all `struct`s implemented in `libc` are `Copy` and `Clone`.
+- `extra_traits`: all `struct`s implemented in `libc` are `Copy` and `Clone`.
   This feature derives `Debug`, `Eq`, `Hash`, and `PartialEq`.
 
 * `const-extern-fn`: Changes some `extern fn`s into `const extern fn`s. If you
   use Rust >= 1.62, this feature is implicitly enabled. Otherwise it requires a
   nightly rustc.
 
-* **deprecated**: `use_std` is deprecated, and is equivalent to `std`.
+- **deprecated**: `use_std` is deprecated, and is equivalent to `std`.
 
 ## Rust version support
 
-The minimum supported Rust toolchain version is currently **Rust 1.13.0**. (libc
-does not currently have any policy regarding changes to the minimum supported
-Rust version; such policy is a work in progress.) APIs requiring newer Rust
-features are only available on newer Rust toolchains:
+The minimum supported Rust toolchain version is currently **Rust 1.63**.
 
-| Feature              | Version |
-| -------------------- | ------- |
-| `union`              | 1.19.0  |
-| `const mem::size_of` | 1.24.0  |
-| `repr(align)`        | 1.25.0  |
-| `extra_traits`       | 1.25.0  |
-| `core::ffi::c_void`  | 1.30.0  |
-| `repr(packed(N))`    | 1.33.0  |
-| `cfg(target_vendor)` | 1.33.0  |
-| `const-extern-fn`    | 1.62.0  |
+Increases to the MSRV is allowed to change without a major (i.e. semver-
+breaking) change in order to avoid a ripple effect in the ecosystem. This crate
+does not follow any specific reference or schedule for when MSRV should be
+increased; however, it will only be increased when there is a reason.
+
+If your use case requires support for Rust versions below 1.63, it is
+recommended to pin `libc` with `"<=VERSION_BEFORE_THIS_MERGES"`.
 
 ## Platform support
 
@@ -87,10 +81,10 @@ The test-matrix at [GitHub Actions] and [Cirrus CI] show the platforms in which
 
 This project is licensed under either of
 
-* [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
   ([LICENSE-APACHE](https://github.com/rust-lang/libc/blob/HEAD/LICENSE-APACHE))
 
-* [MIT License](https://opensource.org/licenses/MIT)
+- [MIT License](https://opensource.org/licenses/MIT)
   ([LICENSE-MIT](https://github.com/rust-lang/libc/blob/HEAD/LICENSE-MIT))
 
 at your option.
