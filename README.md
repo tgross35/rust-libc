@@ -60,10 +60,29 @@ The minimum supported Rust toolchain version is currently **Rust 1.63**.
 Increases to the MSRV is allowed to change without a major (i.e. semver-
 breaking) change in order to avoid a ripple effect in the ecosystem. This crate
 does not follow any specific reference or schedule for when MSRV should be
-increased; however, it will only be increased when there is a reason.
+increased; however, it will only be increased when there is a specific feature
+we would like to make use of.
+
+`libc` may continue to compile with Rust versions older than the current MSRV
+but this is not guaranteed.
 
 If your use case requires support for Rust versions below 1.63, it is
 recommended to pin `libc` with `"<=VERSION_BEFORE_THIS_MERGES"`.
+
+## Interface version support
+
+`libc` targets being able to interface with the following minimum versions:
+
+- glibc version 2.17, released 2012-12-25
+- musl libc version 1.2.3, released 2022-04-07
+- Linux kernel version 3.2, released 2012-04-01
+- FreeBSD 12.0, released 2018-12-11
+- Emscripten 3.1.42, released 2023-06-23
+- ESP-IDF: v5.0, released 2022-12-02
+
+May support features from newer versions as long as they don't break old.
+
+These may be incremented without semver-breaking change.
 
 ## Platform support
 
