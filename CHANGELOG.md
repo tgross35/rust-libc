@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+## [0.2.170](https://github.com/tgross35/rust-libc/compare/0.2.169...0.2.170) - 2024-12-19
+
+### Other
+
+- Define c_char at top-level and remove per-target c_char definitions
 ## [0.2.169](https://github.com/rust-lang/libc/compare/0.2.168...0.2.169) - 2024-12-18
 
 ### Added
