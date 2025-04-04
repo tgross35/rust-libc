@@ -1952,12 +1952,12 @@ impl<'a> Generator<'a> {
                   }}
                   for i in 0..size_of::<U>() {{
                       if pad[i] == 1 {{ continue; }}
-                      // eprintln!("Rust testing byte {{}} of {{}} of {ty}", i, size_of::<U>());
+                      // outputln!("Rust testing byte {{}} of {{}} of {ty}", i, size_of::<U>());
                       let rust = (*y_ptr.add(i)) as usize;
                       let c = (&r as *const _ as *const u8)
                                  .add(i).read_volatile() as usize;
                       if rust != c {{
-                        eprintln!(
+                        outputln!(
                             "rust [{{}}] = {{}} != {{}} (C): C \"{ty}\" -> Rust",
                              i, rust, c
                         );

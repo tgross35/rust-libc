@@ -1,18 +1,35 @@
 // Template used by all tests
 
 use std::mem;
+use std::path::Path;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use std::sync::Mutex;
 
 static FAILED: AtomicBool = AtomicBool::new(false);
 static NTESTS: AtomicUsize = AtomicUsize::new(0);
+static OUTPUT: Mutex<Option<Box<dyn std::io::Write + Send>>> = Mutex::new(None);
+
+macro_rules! outputln {
+    ($($tt:tt)*) => {
+        writeln!(OUTPUT.lock().unwrap().as_mut().unwrap(), $($tt)*).unwrap();
+    }
+}
 
 fn main() {
-    eprintln!("RUNNING ALL TESTS");
+    run(None);
+}
+
+// Also allows running directly
+pub fn run(outfile: Option<Box<dyn std::io::Write + Send>>) {
+    let dest = outfile.unwrap_or_else(|| Box::new(std::io::stderr()));
+    let _ = OUTPUT.lock().unwrap().insert(dest);
+
+    outputln!("RUNNING ALL TESTS");
     run_all();
     if FAILED.load(Ordering::Relaxed) {
         panic!("some tests failed");
     } else {
-        eprintln!("PASSED {} tests", NTESTS.load(Ordering::Relaxed));
+        outputln!("PASSED {} tests", NTESTS.load(Ordering::Relaxed));
     }
 }
 
@@ -52,7 +69,7 @@ impl_pretty! { i8 i16 i32 i64 u8 u16 u32 u64 usize isize }
 
 fn same<T: Eq + Pretty>(rust: T, c: T, attr: &str) {
     if rust != c {
-        eprintln!("bad {}: rust: {} != c {}", attr, rust.pretty(), c.pretty());
+        outputln!("bad {}: rust: {} != c {}", attr, rust.pretty(), c.pretty());
         FAILED.store(true, Ordering::Relaxed);
     } else {
         NTESTS.fetch_add(1, Ordering::Relaxed);
