@@ -604,7 +604,7 @@ impl TestGenerator {
         File::create(output_file_path.with_extension("rs"))
             .map_err(GenerationError::OsError)?
             .write_all(
-                RustTestTemplate::new(&ffi_items, self)
+                RustTestTemplate::new(&ffi_items, self)?
                     .render()
                     .map_err(|e| {
                         GenerationError::TemplateRender("Rust".to_string(), e.to_string())
@@ -618,7 +618,7 @@ impl TestGenerator {
         File::create(&c_output_path)
             .map_err(GenerationError::OsError)?
             .write_all(
-                CTestTemplate::new(&ffi_items, self)
+                CTestTemplate::new(&ffi_items, self)?
                     .render()
                     .map_err(|e| GenerationError::TemplateRender("C".to_string(), e.to_string()))?
                     .as_bytes(),
