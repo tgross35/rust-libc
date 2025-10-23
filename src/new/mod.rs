@@ -11,5 +11,9 @@ cfg_if! {
     } else if #[cfg(target_os = "android")] {
         mod bionic;
         pub use bionic::*;
+    } else if #[cfg(target_vendor = "apple")] {
+        mod apple;
+        pub(crate) use apple::*;
+        pub use signal::*;
     }
 }
