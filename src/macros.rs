@@ -406,6 +406,27 @@ macro_rules! offset_of {
     }};
 }
 
+macro_rules! unsupported_traits {
+    ($Ty:ty) => {
+        cfg_if! {
+            if #[cfg(feature = "extra_traits")] {
+                impl PartialEq for $Ty {
+                    fn eq(&self, other: &$Ty) -> bool {
+                        unimplemented!("this implementation was removed");
+                    }
+                }
+
+                impl Eq for $Ty {}
+                impl core::hash::Hash for $Ty {
+                    fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
+                        unimplemented!("this implementation was removed");
+                    }
+                }
+            }
+        }
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use core::any::TypeId;
