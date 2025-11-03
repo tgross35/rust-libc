@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 # Parse arguments
 DRY_RUN=false
@@ -38,10 +38,58 @@ echo "Current branch: $current_branch"
 echo "Fetching PRs with 'stable-nominated' label..."
 echo ""
 
-# Get PRs with stable-nominated label that are merged
-# Sort by merge date (oldest first) to preserve merge order and avoid conflicts
-# Format: PR number, title, merge commit SHA
-prs=$(gh pr list --state merged --label stable-nominated --json number,title,mergeCommit,mergedAt --jq 'sort_by(.mergedAt) | .[] | "\(.number)|\(.title)|\(.mergeCommit.oid)"')
+# We need to use the graphql API to be able to return more than ~40 PRs.
+# `--paginate` with `--slurp` will repeat as needed to collect all items.
+# shellcheck disable=SC2016
+input=$(gh api graphql --paginate --slurp -f query='
+    query ($endCursor: String) {
+      repository(name: "libc", owner: "rust-lang") {
+        pullRequests(
+          first: 25
+          after: $endCursor
+          baseRefName: "main"
+          states: MERGED
+          labels: ["stable-nominated"]
+          # Unfortunately ordering by merge date is not supported
+          orderBy: {field: CREATED_AT, direction: ASC}
+        ) {
+          nodes {
+            title
+            number
+            state
+            url
+            author {
+              login
+            }
+            mergedAt
+            mergeCommit {
+              oid
+              committedDate
+              author {
+                name
+              }
+            }
+            commits {
+              totalCount
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    }'
+)
+
+prs=$(echo "$input" | jq '
+    # Pagination returns an array of arrays of objects. Flatten these and collect
+    # only the data we are interested in.
+    map(.data.repository.pullRequests.nodes) | flatten
+    # Oldest to newest
+    | sort_by(.mergedAt)
+    '
+)
 
 if [ -z "$prs" ]; then
     echo "No PRs found with 'stable-nominated' label."
@@ -50,56 +98,95 @@ fi
 
 # Arrays to track results
 declare -a successful
-declare -a failed
+declare -a unneeded
 declare -a skipped
 
-echo "Found PRs to cherry-pick:"
+pr_count=$(echo "$prs" | jq -r 'length' )
+
+echo "Found $pr_count PRs to cherry-pick:"
 echo ""
 
-# Process each PR
-while IFS='|' read -r pr_number title commit_sha; do
+# Turn each array item into a line for execution
+prs_split=$(echo "$prs" | jq -c '.[]')
+
+while read -r pr; do
+    pr_number=$(echo "$pr" | jq -r '.number')
+    commit_count=$(echo "$pr" | jq -r '.commits.totalCount')
+    title=$(echo "$pr" | jq -r '.title')
+    url=$(echo "$pr" | jq -r '.url')
+
+    # For the merge strategy this is the sha of the merge commit. For rebase,
+    # this is the last commit applied. There is unfortunately no easy way to get
+    # a list of the rebased commits, we need to count them.
+    final_commit=$(echo "$pr" | jq -r '.mergeCommit.oid')
+
+    backport_note="(backport <$url>)"
+    pr_info="PR #${pr_number}: ${title}"
+
     echo "----------------------------------------"
-    echo "PR #${pr_number}: ${title}"
-    echo "Commit: ${commit_sha}"
+    echo "$pr_info ($commit_count commits)"
+    echo "Final commit: ${final_commit}"
 
-    # Check if commit already exists in current branch
-    if git branch --contains "$commit_sha" 2>/dev/null | grep -q "^\*"; then
-        echo "⏭  Already cherry-picked, skipping"
-        skipped+=("PR #${pr_number}: ${title}")
-        echo ""
-        continue
-    fi
+    # Loop through each commit in the PR
+    for i in $(seq 1 "$commit_count"); do
+        # Start with the oldest commit from this PR
+        n_back=$((commit_count - i))
+        pick_sha=$(git rev-parse "$final_commit~$n_back")
+        pick_sha_short="${pick_sha:0:12}"
+        pick_sum=$(git log -1 "$pick_sha" --format=%s)
+        pick_sum_short="${pick_sum:0:40}"
 
-    # Cherry-pick with -xe flags as specified
-    if [ "$DRY_RUN" = true ]; then
-        echo "Would cherry-pick with: git cherry-pick -xe $commit_sha"
-        echo "Would add backport note: (backport https://github.com/rust-lang/libc/pull/$pr_number)"
-        successful+=("PR #${pr_number}: ${title} (${commit_sha:0:8})")
-    else
-        if git cherry-pick -xe "$commit_sha" 2>&1; then
-            # Add backport note before the cherry-pick note as per CONTRIBUTING.md
-            current_msg=$(git log -1 --format=%B)
-            backport_line="(backport https://github.com/rust-lang/libc/pull/$pr_number)"
+        commit_info="$pr_info  ($i/$commit_count $pick_sha_short \"$pick_sum_short\")"
 
-            # Insert backport line before "(cherry picked from commit" line
-            new_msg=$(echo "$current_msg" | sed "/^(cherry picked from commit/i\\
-$backport_line\\
+        # Check if commit already exists in current branch
+        if git cherry HEAD "$pick_sha" "$pick_sha~1" | grep -q '^-'; then
+            echo "⏭ Already cherry-picked, skipping"
+            unneeded+=("$commit_info")
+            echo ""
+            continue
+        fi
+
+        # Cherry-pick with -xe flags as specified
+        pick_cmd=(git cherry-pick -xe "$pick_sha_short")
+
+        if [ "$DRY_RUN" = true ]; then
+            echo "⏭ Would cherry-pick with: ${pick_cmd[*]}"
+            echo "⏭ Would add backport note: $backport_note"
+            successful+=("$commit_info")
+            continue
+        fi
+
+        if ! git cherry-pick -xe "$pick_sha"; then
+            echo "Enter c to continue after manual resolution, s to skip this commit,"
+            echo "or any other key to quit."
+            read -rp "selection: " -n1 selection </dev/tty
+            echo
+
+            case "$selection" in
+                c) git cherry-pick --continue ;;
+                s) git cherry-pick --abort
+                   continue ;;
+                *) git cherry-pick --abort
+                   exit 1 ;;
+            esac
+        fi
+
+        # Add backport note before the cherry-pick note as per CONTRIBUTING.md
+        current_msg=$(git log -1 --format=%B)
+
+        # Insert backport line before "(cherry picked from commit" line
+        new_msg=$(echo "$current_msg" | sed "/^(cherry picked from commit/i\\
+$backport_note\\
 ")
 
-            # Amend the commit with the new message
-            git commit --amend -m "$new_msg"
+        # Amend the commit with the new message
+        git commit --amend -m "$new_msg"
 
-            echo "✓ Successfully cherry-picked with backport note"
-            successful+=("PR #${pr_number}: ${title} (${commit_sha:0:8})")
-        else
-            echo "✗ Failed to cherry-pick"
-            failed+=("PR #${pr_number}: ${title} (${commit_sha:0:8})")
-            # Abort the failed cherry-pick
-            git cherry-pick --abort 2>/dev/null || true
-        fi
-    fi
+        echo "✓ Successfully cherry-picked $pick_sha (\"$pick_sum_short\")"
+        successful+=("$commit_info")
+    done
     echo ""
-done <<< "$prs"
+done <<< "$prs_split"
 
 # Print summary
 echo "========================================"
@@ -123,24 +210,20 @@ if [ ${#successful[@]} -gt 0 ]; then
     echo ""
 fi
 
+if [ ${#unneeded[@]} -gt 0 ]; then
+    echo "Unneeded (${#unneeded[@]}):"
+    for item in "${unneeded[@]}"; do
+        echo "  ⏭  $item"
+    done
+    echo ""
+fi
+
 if [ ${#skipped[@]} -gt 0 ]; then
     echo "Skipped (${#skipped[@]}):"
     for item in "${skipped[@]}"; do
         echo "  ⏭  $item"
     done
     echo ""
-fi
-
-if [ ${#failed[@]} -gt 0 ]; then
-    echo "Failed (${#failed[@]}):"
-    for item in "${failed[@]}"; do
-        echo "  ✗ $item"
-    done
-    echo ""
-    if [ "$DRY_RUN" = false ]; then
-        echo "Please resolve conflicts manually and re-run if needed."
-    fi
-    exit 1
 fi
 
 if [ "$DRY_RUN" = true ]; then
