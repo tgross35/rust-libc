@@ -17,10 +17,6 @@ pub type __u64 = c_ulonglong;
 pub type __s64 = c_longlong;
 
 s! {
-    pub struct pthread_attr_t {
-        __size: [c_ulong; 7],
-    }
-
     pub struct stat {
         pub st_dev: crate::dev_t,
         pub st_ino: crate::ino_t,

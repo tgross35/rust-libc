@@ -9,6 +9,9 @@
 mod arch;
 
 pub(crate) mod bits {
+    #[path = "alltypes.h"]
+    pub(crate) mod alltypes;
+
     cfg_if! {
         if #[cfg(target_arch = "mips")] {
             pub(crate) use super::arch::mips::bits::socket;

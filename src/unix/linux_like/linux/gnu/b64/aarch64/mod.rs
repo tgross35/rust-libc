@@ -146,10 +146,6 @@ s! {
         __f_spare: [c_int; 6],
     }
 
-    pub struct pthread_attr_t {
-        __size: [usize; 8],
-    }
-
     pub struct user_regs_struct {
         pub regs: [c_ulonglong; 31],
         pub sp: c_ulonglong,

@@ -579,9 +579,13 @@ pub const SOMAXCONN: c_int = 128;
 #[deprecated(since = "0.2.55", note = "Use SIGSYS instead")]
 pub const SIGUNUSED: c_int = crate::SIGSYS;
 
+#[deprecated(since = "0.2.178", note = "does not exist on musl")]
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
+#[deprecated(since = "0.2.178", note = "does not exist on musl")]
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
+#[deprecated(since = "0.2.178", note = "does not exist on musl")]
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
+#[deprecated(since = "0.2.178", note = "does not exist on musl")]
 pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 
 // Value was changed in 1.2.4

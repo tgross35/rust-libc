@@ -147,10 +147,6 @@ s! {
         __f_spare: [c_int; 6],
     }
 
-    pub struct pthread_attr_t {
-        __size: [u64; 7],
-    }
-
     pub struct ipc_perm {
         pub __key: crate::key_t,
         pub uid: crate::uid_t,

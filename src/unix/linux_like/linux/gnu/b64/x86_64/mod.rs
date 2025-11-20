@@ -151,13 +151,6 @@ s! {
         __f_spare: [c_int; 6],
     }
 
-    pub struct pthread_attr_t {
-        #[cfg(target_pointer_width = "32")]
-        __size: [u32; 8],
-        #[cfg(target_pointer_width = "64")]
-        __size: [u64; 7],
-    }
-
     pub struct _libc_fpxreg {
         pub significand: [u16; 4],
         pub exponent: u16,

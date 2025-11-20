@@ -432,9 +432,6 @@ pub const F_SEAL_WRITE: c_int = 0x0008;
 
 pub const SIGTRAP: c_int = 5;
 
-pub const PTHREAD_CREATE_JOINABLE: c_int = 0;
-pub const PTHREAD_CREATE_DETACHED: c_int = 1;
-
 pub const CLOCK_REALTIME: crate::clockid_t = 0;
 pub const CLOCK_MONOTONIC: crate::clockid_t = 1;
 pub const CLOCK_PROCESS_CPUTIME_ID: crate::clockid_t = 2;

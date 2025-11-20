@@ -2,6 +2,41 @@
 //!
 //! <https://github.com/bminor/glibc/blob/master/sysdeps/nptl/pthread.h>
 
+pub use bits::pthreadtypes::*;
+
+c_enum! {
+    #[repr(c_int)]
+    pub enum #anon {
+        pub PTHREAD_CREATE_JOINABLE,
+        pub PTHREAD_CREATE_DETACHED,
+    }
+
+    #[repr(c_int)]
+    pub enum #anon {
+        PTHREAD_MUTEX_TIMED_NP,
+        PTHREAD_MUTEX_RECURSIVE_NP,
+        PTHREAD_MUTEX_ERRORCHECK_NP,
+        PTHREAD_MUTEX_ADAPTIVE_NP,
+        pub PTHREAD_MUTEX_NORMAL= PTHREAD_MUTEX_TIMED_NP,
+        pub PTHREAD_MUTEX_RECURSIVE= PTHREAD_MUTEX_RECURSIVE_NP,
+        pub PTHREAD_MUTEX_ERRORCHECK= PTHREAD_MUTEX_ERRORCHECK_NP,
+        pub PTHREAD_MUTEX_DEFAULT= PTHREAD_MUTEX_NORMAL,
+    }
+
+    #[repr(c_int)]
+    pub enum #anon {
+        pub PTHREAD_MUTEX_STALLED,
+        pub PTHREAD_MUTEX_ROBUST,
+    }
+
+    #[repr(c_int)]
+    pub enum #anon {
+        pub PTHREAD_PRIO_NONE,
+        pub PTHREAD_PRIO_INHERIT,
+        pub PTHREAD_PRIO_PROTECT,
+    }
+}
+
 pub use crate::new::common::linux_like::pthread::{
     pthread_getaffinity_np,
     pthread_getattr_np,

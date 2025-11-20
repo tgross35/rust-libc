@@ -144,10 +144,6 @@ s! {
         __f_spare: [c_int; 6],
     }
 
-    pub struct pthread_attr_t {
-        __size: [u32; 9],
-    }
-
     pub struct sigset_t {
         __val: [c_ulong; 32],
     }

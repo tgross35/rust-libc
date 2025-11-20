@@ -134,10 +134,6 @@ s! {
         __f_spare: [c_int; 6],
     }
 
-    pub struct pthread_attr_t {
-        __size: [c_ulong; 7],
-    }
-
     // FIXME(1.0): This should not implement `PartialEq`
     #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {

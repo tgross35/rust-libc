@@ -1,7 +1,6 @@
 use crate::off64_t;
 use crate::prelude::*;
 
-pub type pthread_t = c_ulong;
 pub type __priority_which_t = c_uint;
 pub type __rlimit_resource_t = c_uint;
 pub type Lmid_t = c_long;

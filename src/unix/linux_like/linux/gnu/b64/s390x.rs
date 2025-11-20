@@ -113,10 +113,6 @@ s! {
         __glibc_reserved: Padding<[c_long; 3]>,
     }
 
-    pub struct pthread_attr_t {
-        __size: [c_ulong; 7],
-    }
-
     pub struct ipc_perm {
         pub __key: crate::key_t,
         pub uid: crate::uid_t,
