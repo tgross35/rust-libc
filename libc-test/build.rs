@@ -4700,8 +4700,6 @@ fn test_linux(target: &str) {
             }
             // the `u` field is in fact an anonymous union
             ("ptrace_syscall_info", "u" | "pad") if gnu => true,
-            // the vregs field is a `__uint128_t` C's type.
-            ("user_fpsimd_struct", "vregs") => true,
             // Linux >= 5.11 tweaked the `svm_zero` field of the `sockaddr_vm` struct.
             // https://github.com/torvalds/linux/commit/dc8eeef73b63ed8988224ba6b5ed19a615163a7f
             ("sockaddr_vm", "svm_zero") => true,
