@@ -1545,15 +1545,19 @@ pub const NLMSG_OVERRUN: c_int = 0x4;
 pub const NLMSG_MIN_TYPE: c_int = 0x10;
 
 // linux/netfilter/nfnetlink.h
-pub const NFNLGRP_NONE: c_int = 0;
-pub const NFNLGRP_CONNTRACK_NEW: c_int = 1;
-pub const NFNLGRP_CONNTRACK_UPDATE: c_int = 2;
-pub const NFNLGRP_CONNTRACK_DESTROY: c_int = 3;
-pub const NFNLGRP_CONNTRACK_EXP_NEW: c_int = 4;
-pub const NFNLGRP_CONNTRACK_EXP_UPDATE: c_int = 5;
-pub const NFNLGRP_CONNTRACK_EXP_DESTROY: c_int = 6;
-pub const NFNLGRP_NFTABLES: c_int = 7;
-pub const NFNLGRP_ACCT_QUOTA: c_int = 8;
+c_enum! {
+    pub enum nfnetlink_groups {
+        pub NFNLGRP_NONE,
+        pub NFNLGRP_CONNTRACK_NEW,
+        pub NFNLGRP_CONNTRACK_UPDATE,
+        pub NFNLGRP_CONNTRACK_DESTROY,
+        pub NFNLGRP_CONNTRACK_EXP_NEW,
+        pub NFNLGRP_CONNTRACK_EXP_UPDATE,
+        pub NFNLGRP_CONNTRACK_EXP_DESTROY,
+        pub NFNLGRP_NFTABLES,
+        pub NFNLGRP_ACCT_QUOTA,
+    }
+}
 
 pub const NFNETLINK_V0: c_int = 0;
 
@@ -1575,43 +1579,53 @@ pub const NFNL_MSG_BATCH_BEGIN: c_int = NLMSG_MIN_TYPE;
 pub const NFNL_MSG_BATCH_END: c_int = NLMSG_MIN_TYPE + 1;
 
 // linux/netfilter/nfnetlink_log.h
-pub const NFULNL_MSG_PACKET: c_int = 0;
-pub const NFULNL_MSG_CONFIG: c_int = 1;
+c_enum! {
+    pub enum nfulnl_msg_types {
+        pub NFULNL_MSG_PACKET,
+        pub NFULNL_MSG_CONFIG,
+    }
 
-pub const NFULA_UNSPEC: c_int = 0;
-pub const NFULA_PACKET_HDR: c_int = 1;
-pub const NFULA_MARK: c_int = 2;
-pub const NFULA_TIMESTAMP: c_int = 3;
-pub const NFULA_IFINDEX_INDEV: c_int = 4;
-pub const NFULA_IFINDEX_OUTDEV: c_int = 5;
-pub const NFULA_IFINDEX_PHYSINDEV: c_int = 6;
-pub const NFULA_IFINDEX_PHYSOUTDEV: c_int = 7;
-pub const NFULA_HWADDR: c_int = 8;
-pub const NFULA_PAYLOAD: c_int = 9;
-pub const NFULA_PREFIX: c_int = 10;
-pub const NFULA_UID: c_int = 11;
-pub const NFULA_SEQ: c_int = 12;
-pub const NFULA_SEQ_GLOBAL: c_int = 13;
-pub const NFULA_GID: c_int = 14;
-pub const NFULA_HWTYPE: c_int = 15;
-pub const NFULA_HWHEADER: c_int = 16;
-pub const NFULA_HWLEN: c_int = 17;
-pub const NFULA_CT: c_int = 18;
-pub const NFULA_CT_INFO: c_int = 19;
+    pub enum nfulnl_attr_type {
+        pub NFULA_UNSPEC,
+        pub NFULA_PACKET_HDR,
+        pub NFULA_MARK,
+        pub NFULA_TIMESTAMP,
+        pub NFULA_IFINDEX_INDEV,
+        pub NFULA_IFINDEX_OUTDEV,
+        pub NFULA_IFINDEX_PHYSINDEV,
+        pub NFULA_IFINDEX_PHYSOUTDEV,
+        pub NFULA_HWADDR,
+        pub NFULA_PAYLOAD,
+        pub NFULA_PREFIX,
+        pub NFULA_UID,
+        pub NFULA_SEQ,
+        pub NFULA_SEQ_GLOBAL,
+        pub NFULA_GID,
+        pub NFULA_HWTYPE,
+        pub NFULA_HWHEADER,
+        pub NFULA_HWLEN,
+        pub NFULA_CT,
+        pub NFULA_CT_INFO,
+    }
 
-pub const NFULNL_CFG_CMD_NONE: c_int = 0;
-pub const NFULNL_CFG_CMD_BIND: c_int = 1;
-pub const NFULNL_CFG_CMD_UNBIND: c_int = 2;
-pub const NFULNL_CFG_CMD_PF_BIND: c_int = 3;
-pub const NFULNL_CFG_CMD_PF_UNBIND: c_int = 4;
+    pub enum nfulnl_msg_config_cmds {
+        pub NFULNL_CFG_CMD_NONE,
+        pub NFULNL_CFG_CMD_BIND,
+        pub NFULNL_CFG_CMD_UNBIND,
+        pub NFULNL_CFG_CMD_PF_BIND,
+        pub NFULNL_CFG_CMD_PF_UNBIND,
+    }
 
-pub const NFULA_CFG_UNSPEC: c_int = 0;
-pub const NFULA_CFG_CMD: c_int = 1;
-pub const NFULA_CFG_MODE: c_int = 2;
-pub const NFULA_CFG_NLBUFSIZ: c_int = 3;
-pub const NFULA_CFG_TIMEOUT: c_int = 4;
-pub const NFULA_CFG_QTHRESH: c_int = 5;
-pub const NFULA_CFG_FLAGS: c_int = 6;
+    pub enum nfulnl_attr_config {
+        pub NFULA_CFG_UNSPEC,
+        pub NFULA_CFG_CMD,
+        pub NFULA_CFG_MODE,
+        pub NFULA_CFG_NLBUFSIZ,
+        pub NFULA_CFG_TIMEOUT,
+        pub NFULA_CFG_QTHRESH,
+        pub NFULA_CFG_FLAGS,
+    }
+}
 
 pub const NFULNL_COPY_NONE: c_int = 0x00;
 pub const NFULNL_COPY_META: c_int = 0x01;
@@ -1622,59 +1636,71 @@ pub const NFULNL_CFG_F_SEQ_GLOBAL: c_int = 0x0002;
 pub const NFULNL_CFG_F_CONNTRACK: c_int = 0x0004;
 
 // linux/netfilter/nfnetlink_log.h
-pub const NFQNL_MSG_PACKET: c_int = 0;
-pub const NFQNL_MSG_VERDICT: c_int = 1;
-pub const NFQNL_MSG_CONFIG: c_int = 2;
-pub const NFQNL_MSG_VERDICT_BATCH: c_int = 3;
+c_enum! {
+    pub enum nfqnl_msg_types {
+        NFQNL_MSG_PACKET,
+        NFQNL_MSG_VERDICT,
+        NFQNL_MSG_CONFIG,
+        NFQNL_MSG_VERDICT_BATCH,
+    }
 
-pub const NFQA_UNSPEC: c_int = 0;
-pub const NFQA_PACKET_HDR: c_int = 1;
-pub const NFQA_VERDICT_HDR: c_int = 2;
-pub const NFQA_MARK: c_int = 3;
-pub const NFQA_TIMESTAMP: c_int = 4;
-pub const NFQA_IFINDEX_INDEV: c_int = 5;
-pub const NFQA_IFINDEX_OUTDEV: c_int = 6;
-pub const NFQA_IFINDEX_PHYSINDEV: c_int = 7;
-pub const NFQA_IFINDEX_PHYSOUTDEV: c_int = 8;
-pub const NFQA_HWADDR: c_int = 9;
-pub const NFQA_PAYLOAD: c_int = 10;
-pub const NFQA_CT: c_int = 11;
-pub const NFQA_CT_INFO: c_int = 12;
-pub const NFQA_CAP_LEN: c_int = 13;
-pub const NFQA_SKB_INFO: c_int = 14;
-pub const NFQA_EXP: c_int = 15;
-pub const NFQA_UID: c_int = 16;
-pub const NFQA_GID: c_int = 17;
-pub const NFQA_SECCTX: c_int = 18;
-/*
- FIXME: These are not yet available in musl sanitized kernel headers and
- make the tests fail. Enable them once musl has them.
+    pub enum nfqnl_attr_type {
+        NFQA_UNSPEC,
+        NFQA_PACKET_HDR,
+        NFQA_VERDICT_HDR,
+        NFQA_MARK,
+        NFQA_TIMESTAMP,
+        NFQA_IFINDEX_INDEV,
+        NFQA_IFINDEX_OUTDEV,
+        NFQA_IFINDEX_PHYSINDEV,
+        NFQA_IFINDEX_PHYSOUTDEV,
+        NFQA_HWADDR,
+        NFQA_PAYLOAD,
+        NFQA_CT,
+        NFQA_CT_INFO,
+        NFQA_CAP_LEN,
+        NFQA_SKB_INFO,
+        NFQA_EXP,
+        NFQA_UID,
+        NFQA_GID,
+        NFQA_SECCTX,
+        /*
+         FIXME: These are not yet available in musl sanitized kernel headers and
+         make the tests fail. Enable them once musl has them.
 
- See https://github.com/rust-lang/libc/pull/1628 for more details.
-pub const NFQA_VLAN: c_int = 19;
-pub const NFQA_L2HDR: c_int = 20;
+         See https://github.com/rust-lang/libc/pull/1628 for more details.
+        NFQA_VLAN,
+        NFQA_L2HDR,
 
-pub const NFQA_VLAN_UNSPEC: c_int = 0;
-pub const NFQA_VLAN_PROTO: c_int = 1;
-pub const NFQA_VLAN_TCI: c_int = 2;
-*/
+        NFQA_VLAN_UNSPEC,
+        NFQA_VLAN_PROTO,
+        NFQA_VLAN_TCI,
+        */
+    }
 
-pub const NFQNL_CFG_CMD_NONE: c_int = 0;
-pub const NFQNL_CFG_CMD_BIND: c_int = 1;
-pub const NFQNL_CFG_CMD_UNBIND: c_int = 2;
-pub const NFQNL_CFG_CMD_PF_BIND: c_int = 3;
-pub const NFQNL_CFG_CMD_PF_UNBIND: c_int = 4;
+    pub enum nfqnl_msg_config_cmds {
+        NFQNL_CFG_CMD_NONE,
+        NFQNL_CFG_CMD_BIND,
+        NFQNL_CFG_CMD_UNBIND,
+        NFQNL_CFG_CMD_PF_BIND,
+        NFQNL_CFG_CMD_PF_UNBIND,
+    }
 
-pub const NFQNL_COPY_NONE: c_int = 0;
-pub const NFQNL_COPY_META: c_int = 1;
-pub const NFQNL_COPY_PACKET: c_int = 2;
+    pub enum nfqnl_config_mode {
+        NFQNL_COPY_NONE,
+        NFQNL_COPY_META,
+        NFQNL_COPY_PACKET,
+    }
 
-pub const NFQA_CFG_UNSPEC: c_int = 0;
-pub const NFQA_CFG_CMD: c_int = 1;
-pub const NFQA_CFG_PARAMS: c_int = 2;
-pub const NFQA_CFG_QUEUE_MAXLEN: c_int = 3;
-pub const NFQA_CFG_MASK: c_int = 4;
-pub const NFQA_CFG_FLAGS: c_int = 5;
+    pub enum nfqnl_attr_config {
+        NFQA_CFG_UNSPEC,
+        NFQA_CFG_CMD,
+        NFQA_CFG_PARAMS,
+        NFQA_CFG_QUEUE_MAXLEN,
+        NFQA_CFG_MASK,
+        NFQA_CFG_FLAGS,
+    }
+}
 
 pub const NFQA_CFG_F_FAIL_OPEN: c_int = 0x0001;
 pub const NFQA_CFG_F_CONNTRACK: c_int = 0x0002;
