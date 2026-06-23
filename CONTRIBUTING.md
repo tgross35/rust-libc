@@ -124,3 +124,9 @@ has been merged, a maintainer just needs to verify the generated changelog, then
 merge the bot's release PR. This will automatically publish to crates.io!
 
 [release-plz]: https://github.com/MarcoIeni/release-plz
+
+# Maintenance
+
+To list backports:
+
+    https://github.com/rust-lang/libc/pulls?q=is%3Apr+is%3Aclosed+-label%3Astable-nominated++-label%3Astable-declined+-label%3Astable-unneeded+-label%3Astable-applied+sort%3Aupdated-desc+is%3Amerged+base%3Amain
