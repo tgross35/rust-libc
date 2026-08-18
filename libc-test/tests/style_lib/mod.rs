@@ -34,6 +34,7 @@ use std::path::{
 };
 
 use annotate_snippets::{
+    AnnotationKind,
     Level,
     Renderer,
     Snippet,
@@ -166,24 +167,37 @@ impl StyleChecker {
             let source = fs::read_to_string(&error.path)?;
 
             let mut snippet = Snippet::source(&source)
-                .origin(error.path.to_str().expect("path to be UTF-8"))
+                .path(error.path.to_str().expect("path to be UTF-8"))
                 .fold(true)
-                .annotation(Level::Error.span(error.span.byte_range()).label(&error.msg));
+                .annotation(
+                    AnnotationKind::Primary
+                        .span(error.span.byte_range())
+                        .label(&error.msg),
+                );
+
+            // let mut snippet = Snippet::source(&source)
+            //     .path(error.path.to_str().expect("path to be UTF-8"))
+            //     .fold(true)
+            //     .annotation(Level::ERROR.span(error.span.byte_range()).label(&error.msg));
             if let Some((help_span, help_msg)) = &error.help {
                 if let Some(help_span) = help_span {
-                    snippet = snippet
-                        .annotation(Level::Help.span(help_span.byte_range()).label(help_msg));
+                    snippet = snippet.annotation(
+                        AnnotationKind::Context
+                            .span(help_span.byte_range())
+                            .label(help_msg),
+                        // Level::HELP.span(help_span.byte_range()).label(help_msg)
+                    );
                 }
             }
 
-            let mut msg = Level::Error.title(&error.title).snippet(snippet);
+            let mut msg = Level::ERROR.primary_title(&error.title).element(snippet);
             if let Some((help_span, help_msg)) = &error.help {
                 if help_span.is_none() {
-                    msg = msg.footer(Level::Help.title(help_msg))
+                    msg = msg.element(Level::HELP.message(help_msg));
                 }
             }
 
-            eprintln!("{}", renderer.render(msg));
+            eprintln!("{}", renderer.render(&[msg]));
         }
 
         Err("some tests failed".into())
